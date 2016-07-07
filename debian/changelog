@@ -1,8 +1,88 @@
-libmbim (1.8.0-1~bpo70+1) wheezy-backports; urgency=medium
+libmbim (1.14.0-1) unstable; urgency=medium
 
-  * Rebuild for wheezy-backports.
+  * New upstream release.
+  * Explicitly build with udev support.
+  * Update symbols file.
+  * Bump Standards-Version to 3.9.8.
+  * Install bash-completion file for mbimcli.
 
- -- Alex Ferm <aferm@petropower.com>  Wed, 03 Sep 2014 15:25:51 -0500
+ -- Michael Biebl <biebl@debian.org>  Thu, 07 Jul 2016 23:34:33 +0200
+
+libmbim (1.12.4-1) unstable; urgency=medium
+
+  [ Thomas Bechtold ]
+  * Set biebl@debian.org as new Maintainer and move myself to
+    Uploaders.
+
+  [ Michael Biebl ]
+  * New upstream release.
+  * Use https:// for upstream homepage.
+  * Drop libmbim-glib4-dbg now that we have automatic dbgsym packages.
+  * Ensure proper upgrade from libmbim-glib4-dbg to new dbgsym packages by
+    using dh_strip --dbgsym-migration. Bump Build-Depends on debhelper
+    accordingly.
+  * Bump Standards-Version to 3.9.7.
+  * Drop debian/mbimcli.1 since we use the upstream man page.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 19 Mar 2016 05:07:58 +0100
+
+libmbim (1.12.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Add myself to Uploaders.
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 07 May 2015 01:18:23 +0200
+
+libmbim (1.12.2-1) experimental; urgency=medium
+
+  * Team upload.
+
+  [ Marius B. Kotsbak ]
+  * Imported Upstream version 1.12.2
+  * Update debian/libmbim-glib4.symbols for new upstream release.
+  * Update Debian standards version to the latest.
+  * Add experimental branch config in gbp.conf.
+
+  [ Michael Biebl ]
+  * Update Vcs-* to use canonical URLs, use cgit and https for Vcs-Browser.
+
+ -- Michael Biebl <biebl@debian.org>  Sun, 08 Feb 2015 23:53:38 +0100
+
+libmbim (1.10.0-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Apply patch from Boris Egorov to fix bashisms (Closes: #772325)
+
+ -- Jonathan Wiltshire <jmw@debian.org>  Fri, 19 Dec 2014 20:25:16 +0000
+
+libmbim (1.10.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Use a strictly versioned dependency between libmbim-proxy and
+    libmbim-glib4, so the two packages don't get out of sync.
+  * Make any package linking against libmbim-glib4 get an explicit dependency
+    on libmbim-proxy. The mbim-proxy binary is used internally by
+    libmbim-glib4 and the package split is an implementation detail to
+    properly support multi-arch. Convince lintian that this is intentional.
+
+ -- Michael Biebl <biebl@debian.org>  Tue, 16 Sep 2014 23:03:20 +0200
+
+libmbim (1.10.0-1) unstable; urgency=low
+
+  * Team upload.
+
+  [ Marius B. Kotsbak ]
+  * New upstream release.
+  * Rename libmbim-glib0 → libmbim-glib4 for the soname bump.
+  * Add new package libmbim-proxy holding mbim-proxy binary.
+  * Add debug info package libmbim-glib4-dbg.
+
+  [ Michael Biebl ]
+  * Use dh_install --list-missing to show uninstalled files.
+  * Install man pages via dh_install.
+  * Drop obsolete --with-tests configure option.
+
+ -- Michael Biebl <biebl@debian.org>  Sun, 14 Sep 2014 03:13:18 +0200
 
 libmbim (1.8.0-1) unstable; urgency=medium
 
