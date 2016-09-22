@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
  *
- * Copyright (C) 2013 Aleksander Morgado <aleksander@gnu.org>
+ * Copyright (C) 2013 - 2014 Aleksander Morgado <aleksander@aleksander.es>
  */
 
 #include <glib.h>
@@ -43,6 +43,24 @@
 
 /*****************************************************************************/
 
+static void
+bytearray_apply_padding (GByteArray *buffer,
+                         guint32    *len)
+{
+    static const guint8 padding = 0;
+
+    g_assert (buffer);
+    g_assert (len);
+
+    /* Apply padding to the requested length until multiple of 4 */
+    while (*len % 4 != 0) {
+        g_byte_array_append (buffer, &padding, 1);
+        (*len)++;
+    }
+}
+
+/*****************************************************************************/
+
 GType
 mbim_message_get_type (void)
 {
@@ -62,7 +80,7 @@ mbim_message_get_type (void)
 
 /*****************************************************************************/
 
-static GByteArray *
+GByteArray *
 _mbim_message_allocate (MbimMessageType message_type,
                         guint32         transaction_id,
                         guint32         additional_size)
@@ -492,6 +510,7 @@ void
 _mbim_struct_builder_append_byte_array (MbimStructBuilder *builder,
                                         gboolean           with_offset,
                                         gboolean           with_length,
+                                        gboolean           pad_buffer,
                                         const guint8      *buffer,
                                         guint32            buffer_len)
 {
@@ -501,12 +520,8 @@ _mbim_struct_builder_append_byte_array (MbimStructBuilder *builder,
      */
     if (!with_offset && !with_length) {
         g_byte_array_append (builder->fixed_buffer, buffer, buffer_len);
-        while (buffer_len % 4 != 0) {
-            const guint8 padding = 0;
-
-            g_byte_array_append (builder->fixed_buffer, &padding, 1);
-            buffer_len++;
-        }
+        if (pad_buffer)
+            bytearray_apply_padding (builder->fixed_buffer, &buffer_len);
         return;
     }
 
@@ -550,12 +565,9 @@ _mbim_struct_builder_append_byte_array (MbimStructBuilder *builder,
     if (buffer_len) {
         g_byte_array_append (builder->variable_buffer, (const guint8 *)buffer, (guint)buffer_len);
 
-        while (buffer_len % 4 != 0) {
-            const guint8 padding = 0;
-
-            g_byte_array_append (builder->variable_buffer, &padding, 1);
-            buffer_len++;
-        }
+        /* Note: adding zero padding causes trouble for QMI service */
+        if (pad_buffer)
+            bytearray_apply_padding (builder->variable_buffer, &buffer_len);
     }
 }
 
@@ -630,7 +642,7 @@ _mbim_struct_builder_append_string (MbimStructBuilder *builder,
     guint32 offset;
     guint32 length;
     gchar *utf16le = NULL;
-    gsize utf16le_bytes = 0;
+    guint32 utf16le_bytes = 0;
     GError *error = NULL;
 
     /* A string consists of Offset+Size in the static buffer, plus the
@@ -638,18 +650,22 @@ _mbim_struct_builder_append_string (MbimStructBuilder *builder,
 
     /* Convert the string from UTF-8 to UTF-16LE */
     if (value && value[0]) {
+        gsize out_bytes = 0;
+
         utf16le = g_convert (value,
                              -1,
                              "utf-16le",
                              "utf-8",
                              NULL,
-                             &utf16le_bytes,
+                             &out_bytes,
                              &error);
         if (error) {
             g_warning ("Error converting string: %s", error->message);
             g_error_free (error);
             return;
         }
+
+        utf16le_bytes = out_bytes;
     }
 
     /* If string length is greater than 0, add the offset to fix, otherwise set
@@ -672,18 +688,13 @@ _mbim_struct_builder_append_string (MbimStructBuilder *builder,
     }
 
     /* Add the length value */
-    length = GUINT32_TO_LE ((guint32)utf16le_bytes);
+    length = GUINT32_TO_LE (utf16le_bytes);
     g_byte_array_append (builder->fixed_buffer, (guint8 *)&length, sizeof (length));
 
     /* And finally, the string itself to the variable buffer */
     if (utf16le_bytes) {
         g_byte_array_append (builder->variable_buffer, (const guint8 *)utf16le, (guint)utf16le_bytes);
-        while (utf16le_bytes % 4 != 0) {
-            const guint8 padding = 0;
-
-            g_byte_array_append (builder->variable_buffer, &padding, 1);
-            utf16le_bytes++;
-        }
+        bytearray_apply_padding (builder->variable_buffer, &utf16le_bytes);
     }
     g_free (utf16le);
 }
@@ -824,10 +835,11 @@ void
 _mbim_message_command_builder_append_byte_array (MbimMessageCommandBuilder *builder,
                                                  gboolean                   with_offset,
                                                  gboolean                   with_length,
+                                                 gboolean                   pad_buffer,
                                                  const guint8              *buffer,
                                                  guint32                    buffer_len)
 {
-    _mbim_struct_builder_append_byte_array (builder->contents_builder, with_offset, with_length, buffer, buffer_len);
+    _mbim_struct_builder_append_byte_array (builder->contents_builder, with_offset, with_length, pad_buffer, buffer, buffer_len);
 }
 
 void
@@ -1007,12 +1019,7 @@ void
 mbim_message_set_transaction_id (MbimMessage *self,
                                  guint32      transaction_id)
 {
-    /* Only allow setting transaction ID in host-generated messages */
     g_return_if_fail (self != NULL);
-    g_return_if_fail (MBIM_MESSAGE_GET_MESSAGE_TYPE (self) == MBIM_MESSAGE_TYPE_COMMAND ||
-                      MBIM_MESSAGE_GET_MESSAGE_TYPE (self) == MBIM_MESSAGE_TYPE_OPEN ||
-                      MBIM_MESSAGE_GET_MESSAGE_TYPE (self) == MBIM_MESSAGE_TYPE_CLOSE ||
-                      MBIM_MESSAGE_GET_MESSAGE_TYPE (self) == MBIM_MESSAGE_TYPE_HOST_ERROR);
 
     ((struct header *)(self->data))->transaction_id = GUINT32_TO_LE (transaction_id);
 }
@@ -1198,7 +1205,7 @@ mbim_message_get_printable (const MbimMessage *self,
                                     "%s  cid     = '%s' (0x%08x)\n"
                                     "%s  type    = '%s' (0x%08x)\n",
                                     line_prefix,
-                                    line_prefix, mbim_service_get_string (mbim_message_command_get_service (self)), uuid_printable,
+                                    line_prefix, mbim_service_lookup_name (mbim_message_command_get_service (self)), uuid_printable,
                                     line_prefix, cid_printable, mbim_message_command_get_cid (self),
                                     line_prefix, mbim_message_command_type_get_string (mbim_message_command_get_command_type (self)), mbim_message_command_get_command_type (self));
             g_free (uuid_printable);
@@ -1229,7 +1236,7 @@ mbim_message_get_printable (const MbimMessage *self,
                                     "%s  cid          = '%s' (0x%08x)\n",
                                     line_prefix,
                                     line_prefix, mbim_status_error_get_string (status), status,
-                                    line_prefix, mbim_service_get_string (mbim_message_command_done_get_service (self)), uuid_printable,
+                                    line_prefix, mbim_service_lookup_name (mbim_message_command_done_get_service (self)), uuid_printable,
                                     line_prefix, cid_printable, mbim_message_command_done_get_cid (self));
             g_free (uuid_printable);
         }
@@ -1255,7 +1262,7 @@ mbim_message_get_printable (const MbimMessage *self,
                                     "%s  service = '%s' (%s)\n"
                                     "%s  cid     = '%s' (0x%08x)\n",
                                     line_prefix,
-                                    line_prefix, mbim_service_get_string (mbim_message_indicate_status_get_service (self)), uuid_printable,
+                                    line_prefix, mbim_service_lookup_name (mbim_message_indicate_status_get_service (self)), uuid_printable,
                                     line_prefix, cid_printable, mbim_message_indicate_status_get_cid (self));
             g_free (uuid_printable);
         }
@@ -1518,6 +1525,32 @@ mbim_message_open_get_max_control_transfer (const MbimMessage *self)
 /* 'Open Done' message interface */
 
 /**
+ * mbim_message_open_done_new:
+ * @transaction_id: transaction ID.
+ * @error_status_code: a #MbimStatusError.
+ *
+ * Create a new #MbimMessage of type %MBIM_MESSAGE_TYPE_OPEN_DONE with the specified
+ * parameters.
+ *
+ * Returns: (transfer full): a newly created #MbimMessage, which should be freed with mbim_message_unref().
+ */
+MbimMessage *
+mbim_message_open_done_new (guint32         transaction_id,
+                            MbimStatusError error_status_code)
+{
+    GByteArray *self;
+
+    self = _mbim_message_allocate (MBIM_MESSAGE_TYPE_OPEN_DONE,
+                                   transaction_id,
+                                   sizeof (struct open_done_message));
+
+    /* Open header */
+    ((struct full_message *)(self->data))->message.open_done.status_code = GUINT32_TO_LE (error_status_code);
+
+    return (MbimMessage *)self;
+}
+
+/**
  * mbim_message_open_done_get_status_code:
  * @self: a #MbimMessage.
  *
@@ -1588,6 +1621,32 @@ mbim_message_close_new (guint32 transaction_id)
 /* 'Close Done' message interface */
 
 /**
+ * mbim_message_close_done_new:
+ * @transaction_id: transaction ID.
+ * @error_status_code: a #MbimStatusError.
+ *
+ * Create a new #MbimMessage of type %MBIM_MESSAGE_TYPE_CLOSE_DONE with the specified
+ * parameters.
+ *
+ * Returns: (transfer full): a newly created #MbimMessage, which should be freed with mbim_message_unref().
+ */
+MbimMessage *
+mbim_message_close_done_new (guint32         transaction_id,
+                             MbimStatusError error_status_code)
+{
+    GByteArray *self;
+
+    self = _mbim_message_allocate (MBIM_MESSAGE_TYPE_CLOSE_DONE,
+                                   transaction_id,
+                                   sizeof (struct close_done_message));
+
+    /* Open header */
+    ((struct full_message *)(self->data))->message.close_done.status_code = GUINT32_TO_LE (error_status_code);
+
+    return (MbimMessage *)self;
+}
+
+/**
  * mbim_message_close_done_get_status_code:
  * @self: a #MbimMessage.
  *
@@ -1655,7 +1714,34 @@ mbim_message_error_new (guint32           transaction_id,
 
     self = _mbim_message_allocate (MBIM_MESSAGE_TYPE_HOST_ERROR,
                                    transaction_id,
-                                   sizeof (struct open_message));
+                                   sizeof (struct error_message));
+
+    /* Open header */
+    ((struct full_message *)(self->data))->message.error.error_status_code = GUINT32_TO_LE (error_status_code);
+
+    return (MbimMessage *)self;
+}
+
+/**
+ * mbim_message_function_error_new:
+ * @transaction_id: transaction ID.
+ * @error_status_code: a #MbimProtocolError.
+ *
+ * Create a new #MbimMessage of type %MBIM_MESSAGE_TYPE_FUNCTION_ERROR with the specified
+ * parameters.
+ *
+ * Returns: (transfer full): a newly created #MbimMessage. The returned value
+ * should be freed with mbim_message_unref().
+ */
+MbimMessage *
+mbim_message_function_error_new (guint32           transaction_id,
+                                 MbimProtocolError error_status_code)
+{
+    GByteArray *self;
+
+    self = _mbim_message_allocate (MBIM_MESSAGE_TYPE_FUNCTION_ERROR,
+                                   transaction_id,
+                                   sizeof (struct error_message));
 
     /* Open header */
     ((struct full_message *)(self->data))->message.error.error_status_code = GUINT32_TO_LE (error_status_code);
@@ -1737,9 +1823,8 @@ mbim_message_command_new (guint32                transaction_id,
     const MbimUuid *service_id;
 
     /* Known service required */
-    g_return_val_if_fail (service > MBIM_SERVICE_INVALID, FALSE);
-    g_return_val_if_fail (service <= MBIM_SERVICE_MS_HOST_SHUTDOWN, FALSE);
     service_id = mbim_uuid_from_service (service);
+    g_return_val_if_fail (service_id != NULL, NULL);
 
     self = _mbim_message_allocate (MBIM_MESSAGE_TYPE_COMMAND,
                                    transaction_id,
@@ -2072,4 +2157,74 @@ mbim_message_indicate_status_get_raw_information_buffer (const MbimMessage *self
     return (*length > 0 ?
             ((struct full_message *)(self->data))->message.indicate_status.buffer :
             NULL);
+}
+
+/*****************************************************************************/
+/* Other helpers */
+
+/**
+ * mbim_message_response_get_result:
+ * @self: a #MbimMessage response message.
+ * @expected: expected #MbimMessageType if there isn't any error in the operation.
+ * @error: return location for error or %NULL.
+ *
+ * Gets the result of the operation from the response message, which
+ * can be either a %MBIM_MESSAGE_TYPE_FUNCTION_ERROR message or a message of the
+ * specified @expected type.
+ *
+ * Returns: %TRUE if the operation succeeded, %FALSE if @error is set.
+ */
+gboolean
+mbim_message_response_get_result (const MbimMessage  *self,
+                                  MbimMessageType     expected,
+                                  GError            **error)
+{
+    MbimStatusError status = MBIM_STATUS_ERROR_NONE;
+    MbimMessageType type;
+
+    g_return_val_if_fail (self != NULL, FALSE);
+    g_return_val_if_fail (expected == MBIM_MESSAGE_TYPE_OPEN_DONE  ||
+                          expected == MBIM_MESSAGE_TYPE_CLOSE_DONE ||
+                          expected == MBIM_MESSAGE_TYPE_COMMAND_DONE, FALSE);
+
+    type = MBIM_MESSAGE_GET_MESSAGE_TYPE (self);
+    if (type != MBIM_MESSAGE_TYPE_FUNCTION_ERROR && type != expected) {
+        g_set_error (error,
+                     MBIM_CORE_ERROR,
+                     MBIM_CORE_ERROR_INVALID_MESSAGE,
+                     "Unexpected response message type: 0x%04X", (guint32) type);
+        return FALSE;
+    }
+
+    switch (type) {
+    case MBIM_MESSAGE_TYPE_OPEN_DONE:
+        status = (MbimStatusError) GUINT32_FROM_LE (((struct full_message *)(self->data))->message.open_done.status_code);
+        break;
+
+    case MBIM_MESSAGE_TYPE_CLOSE_DONE:
+        status = (MbimStatusError) GUINT32_FROM_LE (((struct full_message *)(self->data))->message.close_done.status_code);
+        break;
+
+    case MBIM_MESSAGE_TYPE_COMMAND_DONE:
+        status = (MbimStatusError) GUINT32_FROM_LE (((struct full_message *)(self->data))->message.command_done.status_code);
+        break;
+
+    case MBIM_MESSAGE_TYPE_FUNCTION_ERROR:
+        if (error)
+            *error = mbim_message_error_get_error (self);
+        return FALSE;
+
+    default:
+        g_assert_not_reached ();
+    }
+
+    if (status == MBIM_STATUS_ERROR_NONE)
+        return TRUE;
+
+    /* Build error */
+    g_set_error_literal (error,
+                         MBIM_STATUS_ERROR,
+                         status,
+                         mbim_status_error_get_string (status));
+    return FALSE;
 }

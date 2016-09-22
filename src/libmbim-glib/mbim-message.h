@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
  *
- * Copyright (C) 2013 Aleksander Morgado <aleksander@gnu.org>
+ * Copyright (C) 2013 - 2014 Aleksander Morgado <aleksander@aleksander.es>
  */
 
 #ifndef _LIBMBIM_GLIB_MBIM_MESSAGE_H_
@@ -131,9 +131,11 @@ guint32      mbim_message_open_get_max_control_transfer (const MbimMessage *self
 /*****************************************************************************/
 /* 'Open Done' message interface */
 
-MbimStatusError mbim_message_open_done_get_status_code (const MbimMessage  *self);
-gboolean        mbim_message_open_done_get_result      (const MbimMessage  *self,
-                                                        GError            **error);
+MbimMessage     *mbim_message_open_done_new (guint32         transaction_id,
+                                             MbimStatusError error_status_code);
+MbimStatusError  mbim_message_open_done_get_status_code (const MbimMessage  *self);
+gboolean         mbim_message_open_done_get_result      (const MbimMessage  *self,
+                                                         GError            **error);
 
 /*****************************************************************************/
 /* 'Close' message interface */
@@ -143,14 +145,18 @@ MbimMessage *mbim_message_close_new (guint32 transaction_id);
 /*****************************************************************************/
 /* 'Close Done' message interface */
 
-MbimStatusError mbim_message_close_done_get_status_code (const MbimMessage  *self);
-gboolean        mbim_message_close_done_get_result      (const MbimMessage  *self,
-                                                         GError            **error);
+MbimMessage     *mbim_message_close_done_new (guint32         transaction_id,
+                                              MbimStatusError error_status_code);
+MbimStatusError  mbim_message_close_done_get_status_code (const MbimMessage  *self);
+gboolean         mbim_message_close_done_get_result      (const MbimMessage  *self,
+                                                          GError            **error);
 
 /*****************************************************************************/
 /* 'Error' message interface */
 
 MbimMessage       *mbim_message_error_new                   (guint32            transaction_id,
+                                                             MbimProtocolError  error_status_code);
+MbimMessage       *mbim_message_function_error_new          (guint32            transaction_id,
                                                              MbimProtocolError  error_status_code);
 MbimProtocolError  mbim_message_error_get_error_status_code (const MbimMessage *self);
 GError            *mbim_message_error_get_error             (const MbimMessage *self);
@@ -207,6 +213,13 @@ const MbimUuid  *mbim_message_indicate_status_get_service_id             (const 
 guint32          mbim_message_indicate_status_get_cid                    (const MbimMessage  *self);
 const guint8    *mbim_message_indicate_status_get_raw_information_buffer (const MbimMessage  *self,
                                                                           guint32            *length);
+
+/*****************************************************************************/
+/* Other helpers */
+
+gboolean mbim_message_response_get_result (const MbimMessage  *self,
+                                           MbimMessageType     expected,
+                                           GError            **error);
 
 G_END_DECLS
 

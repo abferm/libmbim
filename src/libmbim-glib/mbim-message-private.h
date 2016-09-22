@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
  *
- * Copyright (C) 2013 Aleksander Morgado <aleksander@gnu.org>
+ * Copyright (C) 2013 - 2014 Aleksander Morgado <aleksander@aleksander.es>
  *
  * This is a private non-installed header
  */
@@ -129,6 +129,10 @@ struct full_message {
 } __attribute__((packed));
 
 /*****************************************************************************/
+/* Message creation */
+GByteArray *_mbim_message_allocate (MbimMessageType message_type, guint32 transaction_id, guint32 additional_size);
+
+/*****************************************************************************/
 /* Fragment interface */
 
 gboolean      _mbim_message_is_fragment          (const MbimMessage  *self);
@@ -173,6 +177,7 @@ GByteArray        *_mbim_struct_builder_complete             (MbimStructBuilder 
 void               _mbim_struct_builder_append_byte_array    (MbimStructBuilder *builder,
                                                               gboolean           with_offset,
                                                               gboolean           with_length,
+                                                              gboolean           pad_buffer,
                                                               const guint8      *buffer,
                                                               guint32            buffer_len);
 void               _mbim_struct_builder_append_uuid          (MbimStructBuilder *builder,
@@ -221,6 +226,7 @@ MbimMessage               *_mbim_message_command_builder_complete             (M
 void                       _mbim_message_command_builder_append_byte_array    (MbimMessageCommandBuilder *builder,
                                                                                gboolean                   with_offset,
                                                                                gboolean                   with_length,
+                                                                               gboolean                   pad_buffer,
                                                                                const guint8              *buffer,
                                                                                guint32                    buffer_len);
 void                       _mbim_message_command_builder_append_uuid          (MbimMessageCommandBuilder *builder,

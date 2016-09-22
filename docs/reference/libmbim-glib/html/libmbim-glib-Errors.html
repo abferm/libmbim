@@ -2,20 +2,20 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>libmbim-glib Reference Manual: Errors</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<title>Errors: libmbim-glib Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="libmbim-glib Reference Manual">
 <link rel="up" href="ch01.html" title="Core">
 <link rel="prev" href="libmbim-glib-Enumerations-and-Flags.html" title="Enumerations and Flags">
 <link rel="next" href="libmbim-glib-Common-utilities.html" title="Common utilities">
-<meta name="generator" content="GTK-Doc V1.20 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.25 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="10"><tr valign="middle">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
 <td width="100%" align="left" class="shortcuts">
-<a href="#" class="shortcut">Top</a><span id="nav_description"> <span class="dim">|</span> 
-                  <a href="#libmbim-glib-Errors.description" class="shortcut">Description</a></span><span id="nav_hierarchy"> <span class="dim">|</span> 
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#libmbim-glib-Errors.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
                   <a href="#libmbim-glib-Errors.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
@@ -34,28 +34,28 @@
 </tr></table></div>
 <div class="refsect1">
 <a name="libmbim-glib-Errors.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="functions_return">
 <col class="functions_name">
 </colgroup>
 <tbody>
 <tr>
-<td class="function_type">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<td class="function_type">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 </td>
 <td class="function_name">
 <a class="link" href="libmbim-glib-Errors.html#mbim-core-error-get-string" title="mbim_core_error_get_string ()">mbim_core_error_get_string</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
-<td class="function_type">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<td class="function_type">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 </td>
 <td class="function_name">
 <a class="link" href="libmbim-glib-Errors.html#mbim-protocol-error-get-string" title="mbim_protocol_error_get_string ()">mbim_protocol_error_get_string</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
-<td class="function_type">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<td class="function_type">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 </td>
 <td class="function_name">
 <a class="link" href="libmbim-glib-Errors.html#mbim-status-error-get-string" title="mbim_status_error_get_string ()">mbim_status_error_get_string</a> <span class="c_punctuation">()</span>
@@ -66,7 +66,7 @@
 </div>
 <div class="refsect1">
 <a name="libmbim-glib-Errors.other"></a><h2>Types and Values</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="name">
 <col class="description">
@@ -89,7 +89,7 @@
 </div>
 <div class="refsect1">
 <a name="libmbim-glib-Errors.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="screen">    GEnum
+<pre class="screen">    <a href="https://developer.gnome.org/gobject/unstable/gobject-Enumeration-and-Flag-Types.html">GEnum</a>
     <span class="lineart">├──</span> MbimCoreError
     <span class="lineart">├──</span> MbimProtocolError
     <span class="lineart">╰──</span> MbimStatusError
@@ -103,13 +103,13 @@
 <a name="libmbim-glib-Errors.functions_details"></a><h2>Functions</h2>
 <div class="refsect2">
 <a name="mbim-core-error-get-string"></a><h3>mbim_core_error_get_string ()</h3>
-<pre class="programlisting">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<pre class="programlisting">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 mbim_core_error_get_string (<em class="parameter"><code><a class="link" href="libmbim-glib-Errors.html#MbimCoreError" title="enum MbimCoreError"><span class="type">MbimCoreError</span></a> val</code></em>);</pre>
 <p>Gets the nickname string for the <a class="link" href="libmbim-glib-Errors.html#MbimCoreError" title="enum MbimCoreError"><span class="type">MbimCoreError</span></a> specified at <em class="parameter"><code>val</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.8.7.2.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="mbim-core-error-get-string.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -123,21 +123,21 @@ mbim_core_error_get_string (<em class="parameter"><code><a class="link" href="li
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.8.7.2.6"></a><h4>Returns</h4>
-<p> a string with the nickname, or <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
+<a name="mbim-core-error-get-string.returns"></a><h4>Returns</h4>
+<p> a string with the nickname, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
 <p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
 </div>
 </div>
 <hr>
 <div class="refsect2">
 <a name="mbim-protocol-error-get-string"></a><h3>mbim_protocol_error_get_string ()</h3>
-<pre class="programlisting">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<pre class="programlisting">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 mbim_protocol_error_get_string (<em class="parameter"><code><a class="link" href="libmbim-glib-Errors.html#MbimProtocolError" title="enum MbimProtocolError"><span class="type">MbimProtocolError</span></a> val</code></em>);</pre>
 <p>Gets the nickname string for the <a class="link" href="libmbim-glib-Errors.html#MbimProtocolError" title="enum MbimProtocolError"><span class="type">MbimProtocolError</span></a> specified at <em class="parameter"><code>val</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.8.7.3.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="mbim-protocol-error-get-string.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -151,21 +151,21 @@ mbim_protocol_error_get_string (<em class="parameter"><code><a class="link" href
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.8.7.3.6"></a><h4>Returns</h4>
-<p> a string with the nickname, or <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
+<a name="mbim-protocol-error-get-string.returns"></a><h4>Returns</h4>
+<p> a string with the nickname, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
 <p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
 </div>
 </div>
 <hr>
 <div class="refsect2">
 <a name="mbim-status-error-get-string"></a><h3>mbim_status_error_get_string ()</h3>
-<pre class="programlisting">const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+<pre class="programlisting">const <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
 mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="libmbim-glib-Errors.html#MbimStatusError" title="enum MbimStatusError"><span class="type">MbimStatusError</span></a> val</code></em>);</pre>
 <p>Gets the nickname string for the <a class="link" href="libmbim-glib-Errors.html#MbimStatusError" title="enum MbimStatusError"><span class="type">MbimStatusError</span></a> specified at <em class="parameter"><code>val</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.2.8.7.4.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="mbim-status-error-get-string.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -179,8 +179,8 @@ mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.8.7.4.6"></a><h4>Returns</h4>
-<p> a string with the nickname, or <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
+<a name="mbim-status-error-get-string.returns"></a><h4>Returns</h4>
+<p> a string with the nickname, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if not found. Do not free the returned value. </p>
 <p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
 </div>
 </div>
@@ -191,8 +191,8 @@ mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="
 <a name="MbimCoreError"></a><h3>enum MbimCoreError</h3>
 <p>Common errors that may be reported by libmbim-glib.</p>
 <div class="refsect3">
-<a name="id-1.2.8.8.2.4"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="MbimCoreError.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
 <col class="enum_members_description">
@@ -257,8 +257,8 @@ mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="
 <a name="MbimProtocolError"></a><h3>enum MbimProtocolError</h3>
 <p>MBIM protocol errors.</p>
 <div class="refsect3">
-<a name="id-1.2.8.8.3.4"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="MbimProtocolError.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
 <col class="enum_members_description">
@@ -337,8 +337,8 @@ mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="
 <a name="MbimStatusError"></a><h3>enum MbimStatusError</h3>
 <p>Status of the MBIM request.</p>
 <div class="refsect3">
-<a name="id-1.2.8.8.4.4"></a><h4>Members</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="MbimStatusError.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
 <col class="enum_members_description">
@@ -646,7 +646,6 @@ mbim_status_error_get_string (<em class="parameter"><code><a class="link" href="
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.20</div>
+<hr>Generated by GTK-Doc V1.25</div>
 </body>
 </html>
