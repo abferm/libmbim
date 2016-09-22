@@ -1,0 +1,14 @@
+autom4te.cache/
+debian/.debhelper/
+debian/libmbim-glib-dev/
+debian/libmbim-glib-doc/
+debian/libmbim-glib4/
+debian/libmbim-proxy/
+debian/libmbim-utils/
+debian/tmp/
+docs/reference/libmbim-glib/.libs/
+docs/reference/libmbim-glib/xml/
+src/libmbim-glib/.libs/
+src/libmbim-glib/generated/.libs/
+src/mbim-proxy/.libs/
+src/mbimcli/.libs/
