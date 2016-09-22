@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
  *
- * Copyright (C) 2013 Aleksander Morgado <aleksander@lanedo.com>
+ * Copyright (C) 2013 - 2014 Aleksander Morgado <aleksander@aleksander.es>
  */
 
 #ifndef _LIBMBIM_GLIB_MBIM_UTILS_H_
@@ -42,6 +42,8 @@ void     mbim_utils_set_traces_enabled (gboolean enabled);
 gchar *__mbim_utils_str_hex (gconstpointer mem,
                              gsize         size,
                              gchar         delimiter);
+gboolean __mbim_user_allowed (uid_t uid,
+                              GError **error);
 #endif
 
 G_END_DECLS

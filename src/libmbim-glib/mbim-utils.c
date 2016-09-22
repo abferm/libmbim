@@ -18,15 +18,17 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
  *
- * Copyright (C) 2013 Aleksander Morgado <aleksander@lanedo.com>
+ * Copyright (C) 2013 - 2014 Aleksander Morgado <aleksander@aleksander.es>
  */
 
 #include <config.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <pwd.h>
 
 #include "mbim-utils.h"
+#include "mbim-error-types.h"
 
 /**
  * SECTION:mbim-utils
@@ -70,6 +72,45 @@ __mbim_utils_str_hex (gconstpointer mem,
 
     /* Set output string */
     return new_str;
+}
+
+/*****************************************************************************/
+gboolean
+__mbim_user_allowed (uid_t uid,
+                     GError **error)
+{
+#ifndef MBIM_USERNAME_ENABLED
+    if (uid == 0)
+        return TRUE;
+#else
+# ifndef MBIM_USERNAME
+#  error MBIM username not defined
+# endif
+
+    struct passwd *expected_usr = NULL;
+
+    /* Root user is always allowed, regardless of the specified MBIM_USERNAME */
+    if (uid == 0)
+        return TRUE;
+
+    expected_usr = getpwnam (MBIM_USERNAME);
+    if (!expected_usr) {
+        g_set_error (error,
+                     MBIM_CORE_ERROR,
+                     MBIM_CORE_ERROR_FAILED,
+                     "Not enough privileges (unknown username %s)", MBIM_USERNAME);
+        return FALSE;
+    }
+
+    if (uid == expected_usr->pw_uid)
+        return TRUE;
+#endif
+
+    g_set_error (error,
+                 MBIM_CORE_ERROR,
+                 MBIM_CORE_ERROR_FAILED,
+                 "Not enough privileges");
+    return FALSE;
 }
 
 /*****************************************************************************/
